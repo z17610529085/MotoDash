@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MotoDash 车机</string>
+    <string name="channel_recording">录像服务</string>
+    <string name="channel_recording_desc">保持后台录像运行</string>
+    <string name="notif_title">MotoDash 正在录像</string>
+    <string name="notif_action_stop">停止</string>
+    <string name="notif_action_lock">锁定</string>
+    <string name="btn_start">开始录像</string>
+    <string name="btn_stop">停止录像</string>
+    <string name="btn_lock">锁定本段</string>
+    <string name="btn_gallery">视频列表</string>
+    <string name="btn_settings">设置</string>
+    <string name="perm_required">需要相机与麦克风权限才能录像</string>
+    <string name="gallery_title">录像文件</string>
+    <string name="empty_gallery">暂无录像</string>
+</resources>
