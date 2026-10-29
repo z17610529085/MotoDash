@@ -147,7 +147,6 @@ class MainActivity : AppCompatActivity(), CameraController.Listener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
         binding.btnWallpaper.setOnClickListener { pickWallpaper() }
-        binding.wallpaper.setOnClickListener { pickWallpaper() }
         binding.btnNav.setOnClickListener { openNavigation() }
         binding.btnMusic.setOnClickListener { openMusic() }
         binding.weatherCard.setOnClickListener { refreshWeather(force = true) }
