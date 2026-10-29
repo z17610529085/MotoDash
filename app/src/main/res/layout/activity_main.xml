@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+    <!-- 自定义壁纸层 -->
+    <ImageView
+        android:id="@+id/wallpaper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:contentDescription="@null" />
+    <!-- 相机预览（全屏铺底） -->
+    <androidx.camera.view.PreviewView
+        android:id="@+id/previewView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:implementationMode="performance"
+        app:scaleType="fillCenter" />
+    <!-- 水印叠加层 -->
+    <com.motodash.recorder.ui.WatermarkView
+        android:id="@+id/watermark"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <!-- 画中画：前置摄像头 -->
+    <FrameLayout
+        android:id="@+id/pipContainer"
+        android:layout_width="240dp"
+        android:layout_height="150dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="24dp"
+        android:background="@drawable/bg_pip"
+        android:visibility="gone">
+        <androidx.camera.view.PreviewView
+            android:id="@+id/pipPreview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="3dp"
+            app:implementationMode="compatible"
+            app:scaleType="fillCenter" />
+    </FrameLayout>
+    <!-- 顶部状态条 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_margin="24dp"
+        android:background="@drawable/bg_panel"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="18dp"
+        android:paddingVertical="10dp">
+        <View
+            android:id="@+id/recDot"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:background="@drawable/bg_rec_dot"
+            android:visibility="gone" />
+        <TextView
+            android:id="@+id/tvMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="单摄"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tvStorage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="0 MB / 100 GB"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp" />
+    </LinearLayout>
+    <!-- 存储进度条 -->
+    <ProgressBar
+        android:id="@+id/storageBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="180dp"
+        android:layout_height="4dp"
+        android:layout_gravity="top|start"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="86dp"
+        android:max="100"
+        android:progress="0"
+        android:progressTint="@color/accent" />
+    <!-- 底部控制栏 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="28dp"
+        android:background="@drawable/bg_panel"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRecord"
+            style="@style/Widget.MotoDash.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_start"
+            app:backgroundTint="@color/accent"
+            app:icon="@drawable/ic_play"
+            app:iconTint="@color/black" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLock"
+            style="@style/Widget.MotoDash.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="@string/btn_lock"
+            app:backgroundTint="#33FFFFFF"
+            app:icon="@drawable/ic_lock"
+            app:iconTint="@color/white" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGallery"
+            style="@style/Widget.MotoDash.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="@string/btn_gallery"
+            app:backgroundTint="#33FFFFFF"
+            app:icon="@drawable/ic_gallery"
+            app:iconTint="@color/white" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnWallpaper"
+            style="@style/Widget.MotoDash.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="壁纸"
+            app:backgroundTint="#33FFFFFF"
+            app:icon="@drawable/ic_gallery"
+            app:iconTint="@color/white" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSettings"
+            style="@style/Widget.MotoDash.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="@string/btn_settings"
+            app:backgroundTint="#33FFFFFF"
+            app:icon="@drawable/ic_settings"
+            app:iconTint="@color/white" />
+    </LinearLayout>
+    <!-- 状态提示 -->
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="24dp"
+        android:text=""
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp" />
+</FrameLayout>
