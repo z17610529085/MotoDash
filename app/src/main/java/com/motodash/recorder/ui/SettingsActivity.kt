@@ -66,6 +66,9 @@ class SettingsActivity : AppCompatActivity() {
         binding.swBoot.setOnCheckedChangeListener { _, checked ->
             SettingsRepository.autoStartOnBoot = checked
         }
+        binding.btnWallpaper.setOnClickListener {
+            pickWallpaper()
+        }
         binding.btnAppSettings.setOnClickListener {
             openAppSettings()
         }
@@ -73,6 +76,34 @@ class SettingsActivity : AppCompatActivity() {
             openBatterySettings()
         }
     }
+    private fun pickWallpaper() {
+        val intent = android.content.Intent(android.content.Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(android.content.Intent.CATEGORY_OPENABLE)
+            type = "image/*"
+            addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                android.content.Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
+        }
+        try {
+            startActivityForResult(intent, 3001)
+        } catch (t: Throwable) {
+            Toast.makeText(this, "无法打开文件选择器", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 3001 && resultCode == RESULT_OK) {
+            val uri = data?.data ?: return
+            try {
+                contentResolver.takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            } catch (t: Throwable) {
+            }
+            SettingsRepository.wallpaperUri = uri.toString()
+            Toast.makeText(this, "壁纸已更新，返回主界面生效", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun openAppSettings() {
         try {
             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
