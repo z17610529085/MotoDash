@@ -2,6 +2,7 @@ package com.motodash.recorder.camera
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
+import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
@@ -121,13 +122,32 @@ class CameraController(
             }
             val backInfo = pair.first { it.lensFacing == CameraSelector.LENS_FACING_BACK }
             val frontInfo = pair.first { it.lensFacing == CameraSelector.LENS_FACING_FRONT }
+            // 通过 Camera2CameraInfo 取出各自的 cameraId，再用 CameraFilter 精确匹配
+            val backId = Camera2CameraInfo.from(backInfo).cameraId
+            val frontId = Camera2CameraInfo.from(frontInfo).cameraId
             val backSelector = CameraSelector.Builder()
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                .addCameraFilter { list -> list.filter { it.cameraInfo == backInfo } }
+                .addCameraFilter { list ->
+                    list.filter { info ->
+                        try {
+                            Camera2CameraInfo.from(info).cameraId == backId
+                        } catch (t: Throwable) {
+                            false
+                        }
+                    }
+                }
                 .build()
             val frontSelector = CameraSelector.Builder()
                 .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
-                .addCameraFilter { list -> list.filter { it.cameraInfo == frontInfo } }
+                .addCameraFilter { list ->
+                    list.filter { info ->
+                        try {
+                            Camera2CameraInfo.from(info).cameraId == frontId
+                        } catch (t: Throwable) {
+                            false
+                        }
+                    }
+                }
                 .build()
             // 2. 构建 Preview + VideoCapture
             val mainPreview = Preview.Builder().build().also {
