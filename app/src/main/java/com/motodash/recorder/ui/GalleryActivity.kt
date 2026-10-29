@@ -2,6 +2,7 @@ package com.motodash.recorder.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.view.WindowCompat
@@ -27,8 +28,15 @@ class GalleryActivity : AppCompatActivity(), VideoAdapter.Callback {
             hide(WindowInsetsCompat.Type.systemBars())
         }
         adapter = VideoAdapter(this)
+        binding.recycler.layoutManager = LinearLayoutManager(this)
         binding.recycler.adapter = adapter
         binding.btnBack.setOnClickListener { finish() }
+        loadVideos()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // 从录像页/播放页返回时自动刷新列表
         loadVideos()
     }
     private fun loadVideos() {
