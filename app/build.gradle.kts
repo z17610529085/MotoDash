@@ -70,6 +70,7 @@ dependencies {
     val camerax = libs.camera.core
     implementation(camerax)
     implementation(libs.camera.camera2)
+    implementation(libs.camera.camera2.interop)
     implementation(libs.camera.lifecycle)
     implementation(libs.camera.video)
     implementation(libs.camera.view)
