@@ -10,9 +10,12 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.AlarmClock
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -27,7 +30,6 @@ import com.motodash.recorder.camera.CameraController
 import com.motodash.recorder.data.AppLauncher
 import com.motodash.recorder.data.BatteryMonitor
 import com.motodash.recorder.data.LocationHelper
-import com.motodash.recorder.data.RideStats
 import com.motodash.recorder.data.SettingsRepository
 import com.motodash.recorder.data.StorageManager
 import com.motodash.recorder.data.WeatherInfo
@@ -53,7 +55,6 @@ class MainActivity : AppCompatActivity(), CameraController.Listener {
     private var cameraController: CameraController? = null
     private var locationHelper: LocationHelper? = null
     private var batteryMonitor: BatteryMonitor? = null
-    private val rideStats = RideStats()
     private var currentFile: File? = null
     private var currentSecondaryFile: File? = null
     private var pendingStart = false
@@ -64,23 +65,19 @@ class MainActivity : AppCompatActivity(), CameraController.Listener {
     private var musicApps: List<AppLauncher.AppEntry> = emptyList()
     private val uiHandler = Handler(Looper.getMainLooper())
     private val timeFormat = SimpleDateFormat("HH:mm", Locale.US)
+    private val secFormat = SimpleDateFormat("ss", Locale.US)
     private val dateFormat = SimpleDateFormat("M月d日 EEEE", Locale.CHINA)
-    // 每秒刷新：时钟 + 速度 + 统计
+    // 每秒刷新：时钟 + 秒数 + 日期 + 水印
     private val tickRunnable = object : Runnable {
         override fun run() {
             val now = Date()
             binding.tvClock.text = timeFormat.format(now)
+            binding.tvSeconds.text = secFormat.format(now)
             binding.tvDate.text = dateFormat.format(now)
             val loc = locationHelper
-            val speed = loc?.speedKmh ?: 0f
-            binding.speedGauge.speed = speed
-            binding.speedGauge.subtitle = rideStats.compassLabel()
-            binding.tvDistance.text = String.format(Locale.US, "%.2f", rideStats.distanceKm)
-            binding.tvMaxSpeed.text = rideStats.maxSpeedKmh.toInt().toString()
-            binding.tvAvgSpeed.text = rideStats.averageSpeedKmh.toInt().toString()
             binding.watermark.apply {
                 showGps = SettingsRepository.gpsWatermark
-                speedKmh = speed
+                speedKmh = loc?.speedKmh ?: 0f
                 latitude = loc?.latitude ?: 0.0
                 longitude = loc?.longitude ?: 0.0
             }
@@ -102,7 +99,6 @@ class MainActivity : AppCompatActivity(), CameraController.Listener {
         } else {
             Toast.makeText(this, R.string.perm_required, Toast.LENGTH_LONG).show()
         }
-        viewModel.refreshStorage()
     }
     private val stateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -121,72 +117,77 @@ class MainActivity : AppCompatActivity(), CameraController.Listener {
             hide(WindowInsetsCompat.Type.systemBars())
             systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
-        locationHelper = LocationHelper(this).apply {
-            listener = object : LocationHelper.Listener {
-                override fun onLocationChanged(location: android.location.Location) {
-                    rideStats.onLocation(location)
-                }
-            }
-        }
+        locationHelper = LocationHelper(this)
+        // 待机态：隐藏相机预览和水印，让壁纸透出来
+        binding.previewView.visibility = View.INVISIBLE
+        binding.watermark.visibility = View.GONE
+        setupTimezone()
         setupUi()
         applyWallpaper()
         setupBattery()
         discoverApps()
+        buildMusicIcons()
         refreshPermissionsAndCamera()
         if (intent?.getBooleanExtra(EXTRA_AUTO_START, false) == true) pendingStart = true
     }
+    private fun setupTimezone() {
+        val tz = java.util.TimeZone.getDefault()
+        val raw = tz.rawOffset / 3600000
+        val gmt = if (raw >= 0) "GMT+$raw" else "GMT$raw"
+        binding.tvTimezone.text = "$gmt ${tz.getDisplayName(Locale.CHINA)}"
+    }
     private fun setupUi() {
-        binding.btnRecord.setOnClickListener {
+        // 录像卡片 / 红色录制按钮
+        binding.recCard.setOnClickListener {
             if (cameraController?.isRecording == true) stopRecording() else startRecording()
         }
-        binding.btnLock.setOnClickListener { lockCurrent() }
-        binding.btnGallery.setOnClickListener {
-            startActivity(Intent(this, GalleryActivity::class.java))
+        binding.btnRecRed.setOnClickListener {
+            if (cameraController?.isRecording == true) stopRecording() else startRecording()
         }
-        binding.btnSettings.setOnClickListener {
+        // 设置（左上角齿轮 + Dock）
+        binding.btnSettingsGear.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
-        binding.btnWallpaper.setOnClickListener { pickWallpaper() }
-        binding.btnNav.setOnClickListener { openNavigation() }
-        binding.btnMusic.setOnClickListener { openMusic() }
+        binding.dockSettings.setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
+        // Dock
+        binding.dockNav.setOnClickListener { openNavigation() }
+        binding.dockGallery.setOnClickListener {
+            startActivity(Intent(this, GalleryActivity::class.java))
+        }
+        binding.dockWeather.setOnClickListener { refreshWeather(force = true) }
+        binding.dockClock.setOnClickListener { openSystemClock() }
+        binding.dockLock.setOnClickListener { lockCurrent() }
+        // 音源绑定卡片
+        binding.musicCard.setOnClickListener { openMusic() }
+        // 天气卡片点击手动刷新
         binding.weatherCard.setOnClickListener { refreshWeather(force = true) }
         viewModel.recording.observe(this) { rec: Boolean ->
             binding.recDot.visibility = if (rec) View.VISIBLE else View.GONE
-            binding.tvRecState.text = if (rec) "录像中" else "待机"
+            binding.tvRecState.text = if (rec) "录制中" else "待机"
             binding.tvRecState.setTextColor(
-                ContextCompat.getColor(this, if (rec) R.color.danger else R.color.text_secondary)
+                ContextCompat.getColor(this, if (rec) R.color.rec_red else R.color.text_secondary)
             )
-            binding.icRecord.setImageResource(if (rec) R.drawable.ic_stop else R.drawable.ic_play)
-            binding.btnRecord.setBackgroundResource(
-                if (rec) R.drawable.bg_record_btn_active else R.drawable.bg_record_btn
-            )
-            binding.watermark.recording = rec
+            binding.tvRecHint.text = if (rec) "点击停止录制" else "点击开始录制"
+            // 关键：待机时隐藏相机预览让壁纸可见，录像时显示相机画面
+            binding.previewView.visibility = if (rec) View.VISIBLE else View.INVISIBLE
+            binding.watermark.visibility = if (rec) View.VISIBLE else View.GONE
         }
         viewModel.dual.observe(this) { dual: Boolean ->
-            binding.tvMode.text = if (dual) "双摄" else "单摄"
             binding.pipContainer.visibility = if (dual) View.VISIBLE else View.GONE
         }
-        viewModel.usedBytes.observe(this) { used: Long ->
-            val limit = viewModel.storageLimitBytes()
-            binding.tvStorage.text = String.format(
-                Locale.US, "%s / %d GB",
-                StorageManager.formatSize(used), SettingsRepository.storageLimitGb
-            )
-            val percent = if (limit > 0) ((used * 100.0) / limit).toInt().coerceIn(0, 100) else 0
-            binding.storageBar.progress = percent
-        }
-        viewModel.statusText.observe(this) { text: String -> binding.tvStatus.text = text }
     }
     private fun setupBattery() {
         val monitor = BatteryMonitor(this)
         monitor.listener = object : BatteryMonitor.Listener {
             override fun onBatteryChanged(percent: Int, charging: Boolean) {
-                binding.tvBattery.text = if (charging) "$percent%⚡" else "$percent%"
+                binding.tvBattery.text = if (charging) "🔋 $percent%⚡" else "🔋 $percent%"
                 binding.tvBattery.setTextColor(
                     ContextCompat.getColor(
                         this@MainActivity,
                         when {
-                            percent <= 15 -> R.color.danger
+                            percent <= 15 -> R.color.rec_red
                             percent <= 30 -> R.color.amber
                             else -> R.color.text_primary
                         }
@@ -202,6 +203,46 @@ class MainActivity : AppCompatActivity(), CameraController.Listener {
         musicApps = AppLauncher.installedMusicApps(this)
         Log.i(TAG, "导航 App: ${navApps.map { it.label }}")
         Log.i(TAG, "音乐 App: ${musicApps.map { it.label }}")
+    }
+    /** 音源绑定卡片：显示已安装音乐 App 的真实图标（最多 4 个） */
+    private fun buildMusicIcons() {
+        binding.musicIconsContainer.removeAllViews()
+        val px = (44 * resources.displayMetrics.density).toInt()
+        val gap = (12 * resources.displayMetrics.density).toInt()
+        val apps = musicApps.take(4)
+        if (apps.isEmpty()) {
+            // 没装音乐 App：显示 4 个占位图标
+            repeat(4) { i ->
+                val iv = ImageView(this)
+                val lp = LinearLayout.LayoutParams(px, px)
+                if (i < 3) lp.marginEnd = gap
+                iv.layoutParams = lp
+                iv.scaleType = ImageView.ScaleType.FIT_CENTER
+                iv.setPadding(px / 5, px / 5, px / 5, px / 5)
+                iv.setImageResource(R.drawable.ic_music)
+                iv.background = ContextCompat.getDrawable(this, R.drawable.bg_icon_round)
+                iv.backgroundTintList = android.content.res.ColorStateList.valueOf(
+                    ContextCompat.getColor(this, R.color.panel_solid)
+                )
+                binding.musicIconsContainer.addView(iv)
+            }
+        } else {
+            apps.forEachIndexed { idx, app ->
+                val iv = ImageView(this)
+                val lp = LinearLayout.LayoutParams(px, px)
+                if (idx < apps.size - 1) lp.marginEnd = gap
+                iv.layoutParams = lp
+                iv.scaleType = ImageView.ScaleType.FIT_CENTER
+                iv.clipToOutline = true
+                iv.background = ContextCompat.getDrawable(this, R.drawable.bg_icon_round)
+                try {
+                    iv.setImageDrawable(packageManager.getApplicationIcon(app.packageName))
+                } catch (t: Throwable) {
+                    iv.setImageResource(R.drawable.ic_music)
+                }
+                binding.musicIconsContainer.addView(iv)
+            }
+        }
     }
     private fun openNavigation() {
         if (navApps.isEmpty()) {
@@ -239,27 +280,51 @@ class MainActivity : AppCompatActivity(), CameraController.Listener {
             }
             .show()
     }
+    private fun openSystemClock() {
+        try {
+            startActivity(Intent(AlarmClock.ACTION_SHOW_CLOCK).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        } catch (t: Throwable) {
+            try {
+                startActivity(Intent(AlarmClock.ACTION_SET_ALARM).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            } catch (t2: Throwable) {
+                Toast.makeText(this, "未找到系统时钟应用", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
     private fun refreshWeather(force: Boolean = false) {
         val loc = locationHelper
         val lat = loc?.latitude ?: 0.0
         val lon = loc?.longitude ?: 0.0
         if (lat == 0.0 && lon == 0.0) {
-            binding.tvWeatherDesc.text = "待定位"
+            binding.tvCity.text = "待定位"
             return
         }
         weatherJob?.cancel()
         weatherJob = lifecycleScope.launch {
-            binding.tvWeatherDesc.text = "获取中"
+            binding.tvCity.text = lastWeather?.city ?: "获取中"
             val info = WeatherRepository.fetch(lat, lon)
             if (info != null) {
                 lastWeather = info
-                binding.tvWeatherIcon.text = info.icon
-                binding.tvWeatherTemp.text = "${info.temperature}°"
-                binding.tvWeatherDesc.text = info.description
-            } else {
-                binding.tvWeatherDesc.text = lastWeather?.description ?: "获取失败"
+                binding.tvCity.text = info.city
+                binding.tvWeatherTime.text = info.currentHourLabel
+                binding.tvTempMain.text = "${info.temperature}°"
+                binding.tvWeatherIconMain.text = info.icon
+                val s1 = info.slots.getOrNull(0)
+                val s2 = info.slots.getOrNull(1)
+                val s3 = info.slots.getOrNull(2)
+                binding.tvF1Label.text = s1?.label ?: "现在"
+                binding.tvF1Icon.text = s1?.icon ?: "🌡️"
+                binding.tvF1Temp.text = s1?.let { "${it.temp}°" } ?: "--°"
+                binding.tvF2Label.text = s2?.label ?: "--时"
+                binding.tvF2Icon.text = s2?.icon ?: "🌡️"
+                binding.tvF2Temp.text = s2?.let { "${it.temp}°" } ?: "--°"
+                binding.tvF3Label.text = s3?.label ?: "--时"
+                binding.tvF3Icon.text = s3?.icon ?: "🌡️"
+                binding.tvF3Temp.text = s3?.let { "${it.temp}°" } ?: "--°"
+                binding.tvF3Range.text = "${info.todayMin}°~${info.todayMax}°"
+            } else if (lastWeather == null) {
+                binding.tvCity.text = "天气获取失败"
             }
-            // 定时刷新
             if (force) {
                 delay(WEATHER_REFRESH_MS)
                 refreshWeather(force = false)
@@ -333,13 +398,9 @@ class MainActivity : AppCompatActivity(), CameraController.Listener {
         ) { dual: Boolean ->
             viewModel.setDual(dual)
             SettingsRepository.lastSessionSingleCamera = !dual
-            if (!dual && SettingsRepository.dualCameraPreferred) {
-                viewModel.setStatus("本机不支持双摄并发，已降级为单摄")
-            }
         }
         locationHelper?.start()
         startTickLoop()
-        viewModel.refreshStorage()
         // 定位就绪后拉天气
         uiHandler.postDelayed({ refreshWeather(force = true) }, 2500)
     }
@@ -366,7 +427,6 @@ class MainActivity : AppCompatActivity(), CameraController.Listener {
         } catch (t: Throwable) {
             Log.w(TAG, "start service failed", t)
         }
-        viewModel.setStatus("录像中…")
     }
     private fun stopRecording() {
         cameraController?.stopRecording()
@@ -376,8 +436,6 @@ class MainActivity : AppCompatActivity(), CameraController.Listener {
             Log.w(TAG, "stop service failed", t)
         }
         viewModel.setRecording(false)
-        viewModel.setStatus("已停止")
-        viewModel.refreshStorage()
     }
     private fun rotateSegment() {
         val controller = cameraController ?: return
@@ -395,10 +453,9 @@ class MainActivity : AppCompatActivity(), CameraController.Listener {
         }, 800)
     }
     private fun enforceStorage(protect: File?) {
-        val limit = viewModel.storageLimitBytes()
+        val limit = SettingsRepository.storageLimitGb.toLong() * 1024L * 1024L * 1024L
         Thread {
             StorageManager.enforceLimit(this, limit, protect)
-            runOnUiThread { viewModel.refreshStorage() }
         }.start()
     }
     private fun lockCurrent() {
@@ -420,25 +477,25 @@ class MainActivity : AppCompatActivity(), CameraController.Listener {
         } else {
             Toast.makeText(this, "文件尚未生成，稍后再试", Toast.LENGTH_SHORT).show()
         }
-        viewModel.refreshStorage()
     }
     override fun onRecordingStarted(dual: Boolean) {
         viewModel.setRecording(true)
         viewModel.setDual(dual)
-        viewModel.setStatus(if (dual) "双摄录制中" else "单摄录制中")
     }
     override fun onRecordingFinalized(file: File, dual: Boolean) {
         lastLockedFile = file
-        viewModel.refreshStorage()
     }
     override fun onRecordingError(message: String) {
-        viewModel.setStatus(message)
         viewModel.setRecording(false)
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
     override fun onDualCameraFallback(reason: String) {
         viewModel.setDual(false)
-        viewModel.setStatus("双摄不可用：$reason")
+    }
+    override fun onResume() {
+        super.onResume()
+        applyWallpaper()
+        buildMusicIcons()
     }
     override fun onStart() {
         super.onStart()
