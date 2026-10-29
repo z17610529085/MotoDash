@@ -2,10 +2,25 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <!-- 主色调：霓虹青绿（车机仪表感） -->
     <color name="accent">#FF00E5A0</color>
     <color name="accent_dark">#FF00A878</color>
+    <color name="accent_glow">#3300E5A0</color>
+    <!-- 辅助色 -->
+    <color name="cyan">#FF22D3EE</color>
+    <color name="amber">#FFFFB020</color>
     <color name="danger">#FFFF4D4F</color>
+    <color name="purple">#FFA78BFA</color>
+    <!-- 背景层次 -->
+    <color name="bg_deep">#FF07090C</color>
+    <color name="bg_base">#FF0D1117</color>
+    <color name="panel">#CC11161D</color>
+    <color name="panel_solid">#FF11161D</color>
+    <color name="panel_border">#26FFFFFF</color>
+    <!-- 文字 -->
+    <color name="text_primary">#FFFFFFFF</color>
+    <color name="text_secondary">#99FFFFFF</color>
+    <color name="text_tertiary">#66FFFFFF</color>
+    <!-- 兼容旧引用 -->
     <color name="scrim">#66000000</color>
-    <color name="panel">#CC111111</color>
-    <color name="text_secondary">#B3FFFFFF</color>
 </resources>
