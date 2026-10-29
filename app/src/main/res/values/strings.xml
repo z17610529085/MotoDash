@@ -14,4 +14,10 @@
     <string name="perm_required">需要相机与麦克风权限才能录像</string>
     <string name="gallery_title">录像文件</string>
     <string name="empty_gallery">暂无录像</string>
+    <string name="weather_loading">获取中</string>
+    <string name="weather_failed">天气获取失败</string>
+    <string name="nav_choose">选择导航应用</string>
+    <string name="music_choose">选择音乐应用</string>
+    <string name="no_nav_app">未检测到导航应用</string>
+    <string name="no_music_app">未检测到音乐应用</string>
 </resources>
