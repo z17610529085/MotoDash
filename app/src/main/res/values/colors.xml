@@ -2,7 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <!-- 主色调：霓虹青绿（车机仪表感） -->
+    <!-- 主色调：霓虹青绿 -->
     <color name="accent">#FF00E5A0</color>
     <color name="accent_dark">#FF00A878</color>
     <color name="accent_glow">#3300E5A0</color>
@@ -11,6 +11,11 @@
     <color name="amber">#FFFFB020</color>
     <color name="danger">#FFFF4D4F</color>
     <color name="purple">#FFA78BFA</color>
+    <!-- 录制红（设计稿主强调色） -->
+    <color name="rec_red">#FFE8442E</color>
+    <!-- 玻璃拟态 -->
+    <color name="glass">#B31C1C1E</color>
+    <color name="glass_dark">#CC0D0D0D</color>
     <!-- 背景层次 -->
     <color name="bg_deep">#FF07090C</color>
     <color name="bg_base">#FF0D1117</color>
@@ -21,6 +26,5 @@
     <color name="text_primary">#FFFFFFFF</color>
     <color name="text_secondary">#99FFFFFF</color>
     <color name="text_tertiary">#66FFFFFF</color>
-    <!-- 兼容旧引用 -->
     <color name="scrim">#66000000</color>
 </resources>
