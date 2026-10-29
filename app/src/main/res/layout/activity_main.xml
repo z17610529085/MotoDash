@@ -3,33 +3,272 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black">
-    <!-- 自定义壁纸层 -->
+    android:background="@color/bg_deep">
+    <!-- ===== 层 1：自定义壁纸 ===== -->
     <ImageView
         android:id="@+id/wallpaper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         android:contentDescription="@null" />
-    <!-- 相机预览（全屏铺底） -->
+    <!-- ===== 层 2：相机预览 ===== -->
     <androidx.camera.view.PreviewView
         android:id="@+id/previewView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:implementationMode="performance"
         app:scaleType="fillCenter" />
-    <!-- 水印叠加层 -->
+    <!-- ===== 层 3：水印 ===== -->
     <com.motodash.recorder.ui.WatermarkView
         android:id="@+id/watermark"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-    <!-- 画中画：前置摄像头 -->
+    <!-- ===== 层 4：顶部状态栏 ===== -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="10dp">
+        <!-- 大时钟 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tvClock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:textColor="@color/text_primary"
+                android:textSize="34sp"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.02"
+                android:shadowColor="#CC000000"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="8" />
+            <TextView
+                android:id="@+id/tvDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1月1日 周一"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:shadowColor="#CC000000"
+                android:shadowDx="0"
+                android:shadowDy="1"
+                android:shadowRadius="4" />
+        </LinearLayout>
+        <!-- 中间：录像状态胶囊 -->
+        <LinearLayout
+            android:id="@+id/recPill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="18dp"
+            android:background="@drawable/bg_pill"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="7dp">
+            <View
+                android:id="@+id/recDot"
+                android:layout_width="9dp"
+                android:layout_height="9dp"
+                android:background="@drawable/bg_rec_dot"
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/tvRecState"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:text="待机"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
+            <TextView
+                android:id="@+id/tvMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="单摄"
+                android:textColor="@color/accent"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+        <!-- 天气 -->
+        <LinearLayout
+            android:id="@+id/weatherCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="8dp">
+            <TextView
+                android:id="@+id/tvWeatherIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🌡️"
+                android:textSize="20sp" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tvWeatherTemp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="--°"
+                    android:textColor="@color/text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/tvWeatherDesc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="获取中"
+                    android:textColor="@color/text_tertiary"
+                    android:textSize="10sp" />
+            </LinearLayout>
+        </LinearLayout>
+        <!-- 电量 -->
+        <LinearLayout
+            android:id="@+id/batteryCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/bg_card"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="8dp">
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_battery"
+                android:contentDescription="@null"
+                app:tint="@color/accent" />
+            <TextView
+                android:id="@+id/tvBattery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="--%"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+    <!-- ===== 层 5：左侧速度仪表盘 ===== -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|start"
+        android:layout_marginStart="26dp"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+        <com.motodash.recorder.ui.SpeedGaugeView
+            android:id="@+id/speedGauge"
+            android:layout_width="210dp"
+            android:layout_height="210dp" />
+        <!-- 骑行统计卡片 -->
+        <LinearLayout
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_card"
+            android:orientation="horizontal"
+            android:paddingVertical="10dp">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tvDistance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0.00"
+                    android:textColor="@color/accent"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="里程 km"
+                    android:textColor="@color/text_tertiary"
+                    android:textSize="9sp" />
+            </LinearLayout>
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="#1AFFFFFF" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tvMaxSpeed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="@color/cyan"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="最高 km/h"
+                    android:textColor="@color/text_tertiary"
+                    android:textSize="9sp" />
+            </LinearLayout>
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="#1AFFFFFF" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tvAvgSpeed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="@color/amber"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="平均 km/h"
+                    android:textColor="@color/text_tertiary"
+                    android:textSize="9sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+    <!-- ===== 层 6：画中画（前置摄像头） ===== -->
     <FrameLayout
         android:id="@+id/pipContainer"
-        android:layout_width="240dp"
-        android:layout_height="150dp"
-        android:layout_gravity="top|end"
-        android:layout_margin="24dp"
+        android:layout_width="200dp"
+        android:layout_height="126dp"
+        android:layout_gravity="center_vertical|end"
+        android:layout_marginEnd="26dp"
+        android:layout_marginTop="70dp"
         android:background="@drawable/bg_pip"
         android:visibility="gone">
         <androidx.camera.view.PreviewView
@@ -40,122 +279,235 @@
             app:implementationMode="compatible"
             app:scaleType="fillCenter" />
     </FrameLayout>
-    <!-- 顶部状态条 -->
+    <!-- ===== 层 7：右侧快捷卡片（单摄时显示） ===== -->
     <LinearLayout
+        android:id="@+id/quickPanel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:layout_margin="24dp"
-        android:background="@drawable/bg_panel"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingHorizontal="18dp"
-        android:paddingVertical="10dp">
-        <View
-            android:id="@+id/recDot"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:background="@drawable/bg_rec_dot"
-            android:visibility="gone" />
-        <TextView
-            android:id="@+id/tvMode"
-            android:layout_width="wrap_content"
+        android:layout_gravity="center_vertical|end"
+        android:layout_marginEnd="26dp"
+        android:orientation="vertical">
+        <!-- 存储卡片 -->
+        <LinearLayout
+            android:layout_width="190dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:text="单摄"
-            android:textColor="@color/white"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:padding="14dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="存储空间"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp" />
+            <TextView
+                android:id="@+id/tvStorage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="0 MB / 100 GB"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+            <ProgressBar
+                android:id="@+id/storageBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:layout_marginTop="8dp"
+                android:max="100"
+                android:progress="0"
+                android:progressTint="@color/accent"
+                android:progressBackgroundTint="#1AFFFFFF" />
+        </LinearLayout>
+        <!-- 状态提示 -->
         <TextView
-            android:id="@+id/tvStorage"
-            android:layout_width="wrap_content"
+            android:id="@+id/tvStatus"
+            android:layout_width="190dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="0 MB / 100 GB"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_card"
+            android:padding="12dp"
+            android:text="准备就绪"
             android:textColor="@color/text_secondary"
-            android:textSize="13sp" />
+            android:textSize="11sp" />
     </LinearLayout>
-    <!-- 存储进度条 -->
-    <ProgressBar
-        android:id="@+id/storageBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="180dp"
-        android:layout_height="4dp"
-        android:layout_gravity="top|start"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="86dp"
-        android:max="100"
-        android:progress="0"
-        android:progressTint="@color/accent" />
-    <!-- 底部控制栏 -->
+    <!-- ===== 层 8：底部 Dock 栏 ===== -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="28dp"
-        android:background="@drawable/bg_panel"
-        android:gravity="center"
+        android:layout_marginBottom="18dp"
+        android:background="@drawable/bg_card"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="12dp">
-        <com.google.android.material.button.MaterialButton
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="10dp">
+        <!-- 录像主按钮 -->
+        <FrameLayout
             android:id="@+id/btnRecord"
-            style="@style/Widget.MotoDash.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_start"
-            app:backgroundTint="@color/accent"
-            app:icon="@drawable/ic_play"
-            app:iconTint="@color/black" />
-        <com.google.android.material.button.MaterialButton
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:background="@drawable/bg_record_btn"
+            android:contentDescription="开始录像">
+            <ImageView
+                android:id="@+id/icRecord"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_play"
+                android:contentDescription="@null"
+                app:tint="@color/bg_deep" />
+        </FrameLayout>
+        <!-- 锁定 -->
+        <LinearLayout
             android:id="@+id/btnLock"
-            style="@style/Widget.MotoDash.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:text="@string/btn_lock"
-            app:backgroundTint="#33FFFFFF"
-            app:icon="@drawable/ic_lock"
-            app:iconTint="@color/white" />
-        <com.google.android.material.button.MaterialButton
+            android:background="@drawable/bg_dock_item"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="9dp">
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_lock"
+                android:contentDescription="@null"
+                app:tint="@color/text_primary" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="锁定"
+                android:textColor="@color/text_secondary"
+                android:textSize="9sp" />
+        </LinearLayout>
+        <!-- 视频列表 -->
+        <LinearLayout
             android:id="@+id/btnGallery"
-            style="@style/Widget.MotoDash.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:text="@string/btn_gallery"
-            app:backgroundTint="#33FFFFFF"
-            app:icon="@drawable/ic_gallery"
-            app:iconTint="@color/white" />
-        <com.google.android.material.button.MaterialButton
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_dock_item"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="9dp">
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_gallery"
+                android:contentDescription="@null"
+                app:tint="@color/text_primary" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="回放"
+                android:textColor="@color/text_secondary"
+                android:textSize="9sp" />
+        </LinearLayout>
+        <!-- 导航 -->
+        <LinearLayout
+            android:id="@+id/btnNav"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_dock_item"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="9dp">
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_nav"
+                android:contentDescription="@null"
+                app:tint="@color/accent" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="导航"
+                android:textColor="@color/text_secondary"
+                android:textSize="9sp" />
+        </LinearLayout>
+        <!-- 音乐 -->
+        <LinearLayout
+            android:id="@+id/btnMusic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_dock_item"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="9dp">
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_music"
+                android:contentDescription="@null"
+                app:tint="@color/purple" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="音乐"
+                android:textColor="@color/text_secondary"
+                android:textSize="9sp" />
+        </LinearLayout>
+        <!-- 壁纸 -->
+        <LinearLayout
             android:id="@+id/btnWallpaper"
-            style="@style/Widget.MotoDash.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:text="壁纸"
-            app:backgroundTint="#33FFFFFF"
-            app:icon="@drawable/ic_gallery"
-            app:iconTint="@color/white" />
-        <com.google.android.material.button.MaterialButton
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_dock_item"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="9dp">
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_gallery"
+                android:contentDescription="@null"
+                app:tint="@color/text_primary" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="壁纸"
+                android:textColor="@color/text_secondary"
+                android:textSize="9sp" />
+        </LinearLayout>
+        <!-- 设置 -->
+        <LinearLayout
             android:id="@+id/btnSettings"
-            style="@style/Widget.MotoDash.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:text="@string/btn_settings"
-            app:backgroundTint="#33FFFFFF"
-            app:icon="@drawable/ic_settings"
-            app:iconTint="@color/white" />
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_dock_item"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="9dp">
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_settings"
+                android:contentDescription="@null"
+                app:tint="@color/text_primary" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="设置"
+                android:textColor="@color/text_secondary"
+                android:textSize="9sp" />
+        </LinearLayout>
     </LinearLayout>
-    <!-- 状态提示 -->
-    <TextView
-        android:id="@+id/tvStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|start"
-        android:layout_margin="24dp"
-        android:text=""
-        android:textColor="@color/text_secondary"
-        android:textSize="13sp" />
 </FrameLayout>
