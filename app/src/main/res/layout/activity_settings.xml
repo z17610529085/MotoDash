@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:fillViewport="true">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="28dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="返回"
+                android:src="@drawable/ic_back" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="设置"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+        <!-- 分段时长 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="分段时长"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+        <TextView
+            android:id="@+id/tvSegmentValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="5 分钟"
+            android:textColor="@color/accent"
+            android:textSize="13sp" />
+        <SeekBar
+            android:id="@+id/seekSegment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp" />
+        <!-- 存储上限 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="存储上限"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+        <TextView
+            android:id="@+id/tvStorageValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="100 GB"
+            android:textColor="@color/accent"
+            android:textSize="13sp" />
+        <SeekBar
+            android:id="@+id/seekStorage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp" />
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/swAudio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="录制声音"
+            android:textColor="@color/white" />
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/swGps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="GPS 水印"
+            android:textColor="@color/white" />
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/swDual"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="优先双摄（不支持则自动降级）"
+            android:textColor="@color/white" />
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/swBoot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="开机自启"
+            android:textColor="@color/white" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAppSettings"
+            style="@style/Widget.MotoDash.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="系统应用权限设置"
+            app:backgroundTint="#33FFFFFF" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBattery"
+            style="@style/Widget.MotoDash.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="关闭电池优化（保证后台不被杀）"
+            app:backgroundTint="#33FFFFFF" />
+    </LinearLayout>
+</ScrollView>
