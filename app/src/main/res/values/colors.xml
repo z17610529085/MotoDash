@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="accent">#FF00E5A0</color>
+    <color name="accent_dark">#FF00A878</color>
+    <color name="danger">#FFFF4D4F</color>
+    <color name="scrim">#66000000</color>
+    <color name="panel">#CC111111</color>
+    <color name="text_secondary">#B3FFFFFF</color>
+</resources>
