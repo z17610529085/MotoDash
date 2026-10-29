@@ -282,10 +282,14 @@ class MainActivity : AppCompatActivity(), CameraController.Listener {
     }
     private fun openSystemClock() {
         try {
-            startActivity(Intent(AlarmClock.ACTION_SHOW_CLOCK).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            startActivity(
+                Intent(AlarmClock.ACTION_SHOW_ALARMS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
         } catch (t: Throwable) {
             try {
-                startActivity(Intent(AlarmClock.ACTION_SET_ALARM).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                startActivity(
+                    Intent(AlarmClock.ACTION_SET_ALARM).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
             } catch (t2: Throwable) {
                 Toast.makeText(this, "未找到系统时钟应用", Toast.LENGTH_SHORT).show()
             }
