@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.motodash.recorder.R
 import com.motodash.recorder.data.LocationHelper
 import com.motodash.recorder.data.SettingsRepository
 import com.motodash.recorder.data.StorageManager
